@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Requerimiento - AutoGob{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2>Registrar Nuevo Requerimiento Social</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="citizen_name" class="form-label">Nombre Completo *</label>
+                        <input type="text" class="form-control" id="citizen_name" name="citizen_name" 
+                               value="{{ citizen_name or '' }}" required minlength="2" maxlength="100">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="citizen_email" class="form-label">Correo Electrónico *</label>
+                        <input type="email" class="form-control" id="citizen_email" name="citizen_email" 
+                               value="{{ citizen_email or '' }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="citizen_phone" class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" id="citizen_phone" name="citizen_phone" 
+                               value="{{ citizen_phone or '' }}" maxlength="20">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="requirement_type" class="form-label">Tipo de Requerimiento *</label>
+                                <select class="form-select" id="requirement_type" name="requirement_type" required>
+                                    <option value="">Seleccionar tipo...</option>
+                                    <option value="salud" {% if requirement_type == 'salud' %}selected{% endif %}>Salud</option>
+                                    <option value="educacion" {% if requirement_type == 'educacion' %}selected{% endif %}>Educación</option>
+                                    <option value="vivienda" {% if requirement_type == 'vivienda' %}selected{% endif %}>Vivienda</option>
+                                    <option value="empleo" {% if requirement_type == 'empleo' %}selected{% endif %}>Empleo</option>
+                                    <option value="alimentacion" {% if requirement_type == 'alimentacion' %}selected{% endif %}>Alimentación</option>
+                                    <option value="transporte" {% if requirement_type == 'transporte' %}selected{% endif %}>Transporte</option>
+                                    <option value="otro" {% if requirement_type == 'otro' %}selected{% endif %}>Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="priority" class="form-label">Prioridad</label>
+                                <select class="form-select" id="priority" name="priority">
+                                    <option value="baja" {% if priority == 'baja' %}selected{% endif %}>Baja</option>
+                                    <option value="normal" {% if priority == 'normal' or not priority %}selected{% endif %}>Normal</option>
+                                    <option value="alta" {% if priority == 'alta' %}selected{% endif %}>Alta</option>
+                                    <option value="urgente" {% if priority == 'urgente' %}selected{% endif %}>Urgente</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descripción del Requerimiento *</label>
+                        <textarea class="form-control" id="description" name="description" rows="5" 
+                                  required minlength="10" maxlength="1000"
+                                  placeholder="Describe detalladamente tu requerimiento social...">{{ description or '' }}</textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Registrar Requerimiento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

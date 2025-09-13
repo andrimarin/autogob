@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>Bienvenido a AutoGob</h1>
+        <p class="lead">Plataforma de colas para el registro de requerimientos sociales</p>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total de Requerimientos</h5>
+                        <h2 class="card-text">{{ total_requirements }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Pendientes</h5>
+                        <h2 class="card-text">{{ pending_requirements }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>Requerimientos Recientes</h3>
+        {% if requirements %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ciudadano</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Prioridad</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in requirements %}
+                        <tr>
+                            <td>{{ req.id }}</td>
+                            <td>{{ req.citizen_name }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ req.requirement_type.title() }}</span>
+                            </td>
+                            <td>
+                                {% if req.status == 'pending' %}
+                                    <span class="badge bg-warning">Pendiente</span>
+                                {% elif req.status == 'in_progress' %}
+                                    <span class="badge bg-primary">En Proceso</span>
+                                {% elif req.status == 'completed' %}
+                                    <span class="badge bg-success">Completado</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ req.status.title() }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if req.priority == 'urgente' %}
+                                    <span class="badge bg-danger">Urgente</span>
+                                {% elif req.priority == 'alta' %}
+                                    <span class="badge bg-warning">Alta</span>
+                                {% elif req.priority == 'normal' %}
+                                    <span class="badge bg-info">Normal</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Baja</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ req.created_at.strftime('%d/%m/%Y %H:%M') if req.created_at else '' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                No hay requerimientos registrados aún.
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Acciones Rápidas</h5>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('register_requirement') }}" class="btn btn-primary btn-lg w-100 mb-3">
+                    Registrar Nuevo Requerimiento
+                </a>
+                <a href="{{ url_for('queue_status') }}" class="btn btn-outline-primary w-100">
+                    Ver Estado de la Cola
+                </a>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Información</h5>
+            </div>
+            <div class="card-body">
+                <p>Esta plataforma permite a los ciudadanos registrar sus requerimientos sociales de manera organizada y eficiente.</p>
+                <p><strong>Tipos de requerimientos:</strong></p>
+                <ul>
+                    <li>Salud</li>
+                    <li>Educación</li>
+                    <li>Vivienda</li>
+                    <li>Empleo</li>
+                    <li>Alimentación</li>
+                    <li>Transporte</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+/* AutoGob Custom Styles */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.75rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+}
+
+.btn {
+    border-radius: 0.5rem;
+}
+
+.table {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.description-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: help;
+}
+
+.status-select {
+    min-width: 120px;
+}
+
+.alert {
+    border-radius: 0.75rem;
+}
+
+/* Priority colors */
+.priority-urgente {
+    background-color: #dc3545;
+    color: white;
+}
+
+.priority-alta {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.priority-normal {
+    background-color: #0dcaf0;
+    color: white;
+}
+
+.priority-baja {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Status colors */
+.status-pending {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-in-progress {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.status-completed {
+    background-color: #198754;
+    color: white;
+}
+
+.status-cancelled {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Hover effects */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .description-cell {
+        max-width: 150px;
+    }
+}
+
+/* Loading animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Form enhancements */
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Footer styling */
+footer {
+    margin-top: auto;
+    border-top: 1px solid #dee2e6;
+}

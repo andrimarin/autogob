@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Estado de la Cola - AutoGob{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>Estado de la Cola de Requerimientos</h1>
+        <p class="lead">Gestión y seguimiento de todos los requerimientos sociales registrados</p>
+        
+        {% if requirements %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="queueTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Ciudadano</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Tipo</th>
+                            <th>Descripción</th>
+                            <th>Estado</th>
+                            <th>Prioridad</th>
+                            <th>Fecha Registro</th>
+                            <th>Última Actualización</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in requirements %}
+                        <tr data-req-id="{{ req.id }}">
+                            <td>{{ req.id }}</td>
+                            <td>{{ req.citizen_name }}</td>
+                            <td>{{ req.citizen_email }}</td>
+                            <td>{{ req.citizen_phone or '-' }}</td>
+                            <td>
+                                <span class="badge bg-info">{{ req.requirement_type.title() }}</span>
+                            </td>
+                            <td>
+                                <div class="description-cell" title="{{ req.description }}">
+                                    {{ req.description[:100] }}{% if req.description|length > 100 %}...{% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <select class="form-select form-select-sm status-select" data-req-id="{{ req.id }}">
+                                    <option value="pending" {% if req.status == 'pending' %}selected{% endif %}>Pendiente</option>
+                                    <option value="in_progress" {% if req.status == 'in_progress' %}selected{% endif %}>En Proceso</option>
+                                    <option value="completed" {% if req.status == 'completed' %}selected{% endif %}>Completado</option>
+                                    <option value="cancelled" {% if req.status == 'cancelled' %}selected{% endif %}>Cancelado</option>
+                                </select>
+                            </td>
+                            <td>
+                                {% if req.priority == 'urgente' %}
+                                    <span class="badge bg-danger">Urgente</span>
+                                {% elif req.priority == 'alta' %}
+                                    <span class="badge bg-warning">Alta</span>
+                                {% elif req.priority == 'normal' %}
+                                    <span class="badge bg-info">Normal</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Baja</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ req.created_at.strftime('%d/%m/%Y %H:%M') if req.created_at else '' }}</td>
+                            <td>{{ req.updated_at.strftime('%d/%m/%Y %H:%M') if req.updated_at else '' }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="viewDetails({{ req.id }})">
+                                    Ver
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                No hay requerimientos registrados en la cola.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal for viewing details -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Requerimiento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Handle status changes
+document.querySelectorAll('.status-select').forEach(select => {
+    select.addEventListener('change', function() {
+        const reqId = this.dataset.reqId;
+        const newStatus = this.value;
+        
+        fetch(`/api/requirements/${reqId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({status: newStatus})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Error al actualizar estado: ' + data.error);
+                location.reload(); // Reload to reset the select
+            } else {
+                // Update the last updated column
+                const row = this.closest('tr');
+                const lastUpdatedCell = row.cells[9];
+                lastUpdatedCell.textContent = new Date().toLocaleString('es-ES');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al actualizar estado');
+            location.reload();
+        });
+    });
+});
+
+// View details function
+function viewDetails(reqId) {
+    fetch(`/api/requirements`)
+        .then(response => response.json())
+        .then(requirements => {
+            const req = requirements.find(r => r.id === reqId);
+            if (req) {
+                document.getElementById('modalBody').innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>ID:</strong> ${req.id}<br>
+                            <strong>Ciudadano:</strong> ${req.citizen_name}<br>
+                            <strong>Email:</strong> ${req.citizen_email}<br>
+                            <strong>Teléfono:</strong> ${req.citizen_phone || 'No proporcionado'}<br>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Tipo:</strong> ${req.requirement_type}<br>
+                            <strong>Estado:</strong> ${req.status}<br>
+                            <strong>Prioridad:</strong> ${req.priority}<br>
+                            <strong>Fecha:</strong> ${new Date(req.created_at).toLocaleString('es-ES')}<br>
+                        </div>
+                    </div>
+                    <hr>
+                    <strong>Descripción:</strong><br>
+                    <p>${req.description}</p>
+                `;
+                new bootstrap.Modal(document.getElementById('detailsModal')).show();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cargar detalles');
+        });
+}
+</script>
+{% endblock %}
